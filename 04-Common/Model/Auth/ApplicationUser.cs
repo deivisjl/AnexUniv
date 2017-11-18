@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 namespace Model.Auth
 {
@@ -18,5 +19,8 @@ namespace Model.Auth
         public string Name { get; set; }
         public string LastName { get; set; }
         public decimal Credit { get; set; }
+
+        {
+            throw new NotImplementedException();
     }
 }

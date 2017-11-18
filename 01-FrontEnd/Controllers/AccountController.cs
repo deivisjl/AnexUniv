@@ -165,7 +165,13 @@ namespace FrontEnd.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {
+                    Name = model.Name,
+                    LastName = model.LastName,
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Credit = Parameters.NewUserCredits
+                };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
