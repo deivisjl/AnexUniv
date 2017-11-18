@@ -1,5 +1,6 @@
 ﻿using Common;
 using Model.Auth;
+using Model.Helper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Model.Domain
 {
-    public class Course
+    public class Course : AuditEntity, Common.CustomFilters.ISoftDeleted
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -29,5 +30,8 @@ namespace Model.Domain
         [ForeignKey("AuthorId")]
         public ApplicationUser Author { get; set; }
         public string AuthorId { get; set; }
+
+        public bool Deleted { get; set; }
+       
     }
 }
