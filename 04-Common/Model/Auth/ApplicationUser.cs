@@ -20,7 +20,9 @@ namespace Model.Auth
         public string LastName { get; set; }
         public decimal Credit { get; set; }
 
+        /*public static implicit operator ApplicationUser(ApplicationUser v)
         {
             throw new NotImplementedException();
+        }*/
     }
 }

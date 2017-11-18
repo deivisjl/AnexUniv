@@ -12,8 +12,11 @@ using System.Threading.Tasks;
 
 namespace Service
 {
+    //public interface IUserService { }
 
+    public class UserService //: IUserService
     {
+        /*private static NLog.ILogger logger = LogManager.GetCurrentClassLogger();
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly IRepository<ApplicationUser> _applicationUserRepo;
 
@@ -47,5 +50,6 @@ namespace Service
             }
 
             return rh;
+        }*/
     }
 }
