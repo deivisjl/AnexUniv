@@ -13,12 +13,16 @@ using Model.Auth;
 using Auth.Service;
 using Newtonsoft.Json;
 using Common;
+using Service;
+using Service.Config;
+using FrontEnd.App_Start;
 
 namespace FrontEnd.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly IUserService _userService = DependecyFactory.GetInstance<IUserService>();
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
@@ -116,6 +120,41 @@ namespace FrontEnd.Controllers
                 return View("Error");
             }
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
+        }
+
+        public async Task<ActionResult> Get() {
+
+            var userId = CurrentUserHelper.Get.UserId;
+            var model = await UserManager.FindByIdAsync(userId);
+
+            return View(new UserBasicInformationViewModel {
+                    Id = model.Id,
+                    Name = model.Name,
+                    LastName = model.LastName
+            });
+        }
+
+
+        [HttpPost]
+        public JsonResult Update(UserBasicInformationViewModel model) {
+
+            var rh = new ResponseHelper();
+
+            if (ModelState.IsValid)
+            {
+
+                rh = _userService.Update(new ApplicationUser
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    LastName = model.LastName
+                });
+            }
+            else {
+                rh.SetValidations(ModelState.GetErrors());
+            }
+
+            return Json(rh);
         }
 
         //
