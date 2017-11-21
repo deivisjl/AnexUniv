@@ -16,6 +16,7 @@ using Common;
 using Service;
 using Service.Config;
 using FrontEnd.App_Start;
+using System.Collections.Generic;
 
 namespace FrontEnd.Controllers
 {
@@ -81,34 +82,38 @@ namespace FrontEnd.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            var currentUser = UserManager.FindByEmail(model.Email);
+
+            if (currentUser == null)
             {
-                case SignInStatus.Success:
-                    var currentUser = UserManager.FindByEmail(model.Email);
-
-                    var jUser = JsonConvert.SerializeObject(new CurrentUser {
-                        UserId = currentUser.Id,
-                        Name = currentUser.Email,
-                        UserName = currentUser.Email,
-                    });
-
-                    await UserManager.AddClaimAsync(currentUser.Id, new Claim(ClaimTypes.UserData, jUser));
-
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(model);
             }
-        }
 
+            if (!UserManager.CheckPassword(currentUser, model.Password))
+            {
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View(model);
+            }
+
+            var identity = await UserManager.CreateIdentityAsync(currentUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+            var roles = await UserManager.GetRolesAsync(currentUser.Id);
+
+            var jUser = JsonConvert.SerializeObject(new CurrentUser {
+                    UserId = currentUser.Id,
+                    Name = currentUser.Email,
+                    UserName = currentUser.Email,
+                    Roles = roles.Select(x => x.Name).ToList()
+            });
+
+            identity.AddClaim(new Claim(ClaimTypes.UserData, jUser));
+
+            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = true }, identity);
+
+            return RedirectToLocal(returnUrl);
+        }
+        
         //
         // GET: /Account/VerifyCode
         [AllowAnonymous]
@@ -211,7 +216,8 @@ namespace FrontEnd.Controllers
                     Email = model.Email,
                     Credit = Parameters.NewUserCredits
                 };
-                var result = await UserManager.CreateAsync(user, model.Password);
+                var result = await UserManager.CreateWithDefaultRole(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
