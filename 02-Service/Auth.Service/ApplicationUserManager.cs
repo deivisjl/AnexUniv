@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Common;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -69,6 +70,42 @@ namespace Auth.Service
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
+        }
+
+        public  async Task<IdentityResult> CreateWithDefaultRole(ApplicationUser model, string password)
+        {
+            try
+            {
+                await CreateAsync(model, password);
+
+                using (var ctx = new ApplicationDbContext())
+                {
+
+                    //obtener el usuario
+
+                    var userId = ctx.ApplicationUser.Single(x => x.Email == model.Email).Id;
+
+                    //Obtener el Rol
+
+                    var roleId = ctx.ApplicationRole.Single(x => x.Name == RolNames.User).Id;
+
+                    //Registrar la relacion el role con el user
+
+                    ctx.Entry(new ApplicationUserRole {
+                            UserId = userId,
+                            RoleId = roleId
+                    }).State = EntityState.Added;
+
+                    ctx.SaveChanges();
+                }
+
+                return await Task.FromResult(IdentityResult.Success);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return  await Task.FromResult(new IdentityResult(ex.Message));
+            }
         }
 
         public override Task<IdentityResult> AddToRoleAsync(string userId, string roleId)

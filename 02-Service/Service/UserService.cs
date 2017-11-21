@@ -12,11 +12,14 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    //public interface IUserService { }
-
-    public class UserService //: IUserService
+    public interface IUserService
     {
-        /*private static NLog.ILogger logger = LogManager.GetCurrentClassLogger();
+        ResponseHelper Update(ApplicationUser applicationUser);
+    }
+
+    public class UserService : IUserService
+    {
+        private static NLog.ILogger logger = LogManager.GetCurrentClassLogger();
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly IRepository<ApplicationUser> _applicationUserRepo;
 
@@ -41,6 +44,8 @@ namespace Service
                     originalModel.LastName = model.LastName;
 
                     _applicationUserRepo.Update(originalModel);
+                    ctx.SaveChanges();
+
                     rh.SetResponse(true);
                 }
 
@@ -50,6 +55,6 @@ namespace Service
             }
 
             return rh;
-        }*/
+        }
     }
 }
