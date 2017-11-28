@@ -1,4 +1,5 @@
 ﻿using Common;
+using FrontEnd.App_Start;
 using Service;
 using System.Web.Mvc;
 
@@ -8,6 +9,7 @@ namespace FrontEnd.Controllers
     public class PanelController : Controller
     {
         private IUserService _userService = DependecyFactory.GetInstance<IUserService>();
+        private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
         // GET: Course
         public ActionResult Index()
         {
@@ -23,6 +25,27 @@ namespace FrontEnd.Controllers
         public JsonResult Category(int id = 0)
         {
             return Json(null);
+        }
+
+        [HttpPost]
+        public JsonResult CategorySave(Model.Domain.Category model)
+        {
+            var rh = new ResponseHelper();
+
+            if (!ModelState.IsValid)
+            {
+                var validations = ModelState.GetErrors();
+                rh.SetValidations(validations);
+            }
+            else {
+                rh = _categoryService.InsertOrUpdate(model);
+                if (rh.Response) {
+
+                    rh.Href = "self";
+                }
+            }
+
+            return Json(rh);
         }
 
         public ActionResult Courses()

@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Model.Auth;
 using System.ComponentModel;
 using Model.Helper;
+using System.ComponentModel.DataAnnotations;
 
 namespace Model.Domain
 {
@@ -18,10 +19,12 @@ namespace Model.Domain
         public bool Completed { get; set; }
 
         public Course Course { get; set; }
+        [Required]
         public int CourseId { get; set; }
 
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
+        [Required]
         public string UserId { get; set; }
 
         public bool Deleted { get; set; }
