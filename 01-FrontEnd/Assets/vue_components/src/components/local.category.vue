@@ -1,17 +1,19 @@
 <template>
   <div>
+  <input v-model="Id" type="hidden" name="Id"/>
+
     <div class="alert-container"></div>
       <div class="form-group">
-        <label>Ícono</label>
+        <label>Ícono {{ Id }}</label>
         <div class="input-group">
-            <input v-model="selectedIcon" type="text" class="form-control" name="Icon"/>
-            <span class="input-group-addon"><icon :name="selectedIcon"></icon></span>
+            <input v-model="Icon" type="text" class="form-control" name="Icon"/>
+            <span class="input-group-addon"><icon :name="Icon"></icon></span>
         </div>
         <span data-key="Icon" class="form-validation-failed"></span>
     </div>
     <div class="form-group">
         <label>Nombre</label>
-        <input type="text" class="form-control" name="Name" />
+        <input v-model="Name" type="text" class="form-control" name="Name" />
         <span data-key="Name" class="form-validation-failed"></span>
     </div>
     
@@ -19,32 +21,68 @@
 </template>
 
 <script>
-import icon from './global.icon.vue'
+  import icon from './global.icon.vue'
 
-export default {
+  export default {
   components:{
-    icon
+  icon
   },
   data(){
     return {
-      selectedIcon: 'code'
+      Id: 0,
+      Icon: 'code',
+      Name: ''
     }
   },
   name: 'category',
   props: {
-    id: {
-      type: Number,
-      default: 0
-    },
-    link: {
+    url:{
       type: String,
-      requide: true
+      required:true
     }
+    // id: {
+    // type: Number,
+    // default: 0
+    // },
+    // link: {
+    // type: String,
+    // requide: true
+    // }
   },
   mounted() {
-    this.$parent.$on('categorySelectedID', id => {
-      this.id = id;
-    })
+    var self = this;
+    
+    this.$parent.$on('categorySelectedID', function(v) {
+
+    self.Id = v;
+
+  })
+  },
+
+  watch: {
+    Id(newValue, oldValue) {
+      if(newValue > 0) {
+        this.getCategory(newValue);
+      } else {
+        this.newRecord();
+      }
+    }
+  },
+  methods: {
+    getCategory(id) {
+      var self = this;
+      $.post(self.url, { id: id }, function(r){ 
+        self.Name = r.Name;
+        self.Icon = r.Icon;
+        self.Id   = id;
+      }, 'json')
+    },
+    newRecord() {
+      var self = this;
+      self.Name = '';
+      self.Icon = 'code';
+      self.Id   = 0;
+    }
   }
-}
+  }
 </script>

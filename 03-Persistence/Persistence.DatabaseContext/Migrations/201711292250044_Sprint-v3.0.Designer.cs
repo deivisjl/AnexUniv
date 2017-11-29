@@ -7,13 +7,13 @@ namespace Persistence.DatabaseContext.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class SprintV30 : IMigrationMetadata
+    public sealed partial class Sprintv30 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SprintV30));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Sprintv30));
         
         string IMigrationMetadata.Id
         {
-            get { return "201711281130375_Sprint-V3.0"; }
+            get { return "201711292250044_Sprint-v3.0"; }
         }
         
         string IMigrationMetadata.Source

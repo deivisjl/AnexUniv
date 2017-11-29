@@ -13,7 +13,7 @@ namespace Model.Domain
 {
     public class Course : AuditEntity, Common.CustomFilters.ISoftDeleted
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         [Required]
         public string Name { get; set; }        
         public string Slug { get; set; }
