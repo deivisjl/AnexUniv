@@ -19,6 +19,8 @@ namespace Service
     public interface ICategoryService
     {
         ResponseHelper InsertOrUpdate(Category model);
+        AnexGRIDResponde GetAll(AnexGRID grid);
+        Category Get(int id);
     }
 
     public class CategoryService : ICategoryService
@@ -50,8 +52,9 @@ namespace Service
 
                         originalCategory.Name = model.Name;
                         originalCategory.Icon = model.Icon;
+                        originalCategory.Slug = Slug.Category(model.Id, model.Name);
 
-                        _categoryRepo.Insert(originalCategory);
+                        _categoryRepo.Update(originalCategory);
                     }
                     else {
 
@@ -90,5 +93,80 @@ namespace Service
             return rh;
         }
 
+        public Category Get(int id)
+        {
+            var result = new Category();
+
+            try {
+
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly()) {
+
+                    result = _categoryRepo.SingleOrDefault(x => x.Id == id);
+                }
+            } catch (Exception e) {
+
+                logger.Error(e.Message);
+            }
+
+            return result;
+        }
+
+        public AnexGRIDResponde GetAll(AnexGRID grid)
+        {
+            grid.Inicializar();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    var courses = ctx.GetEntity<Course>();
+                    var categories = ctx.GetEntity<Category>();
+                    var students = ctx.GetEntity<UsersPerCourses>();
+
+                    var queryStudents = (
+                        from c in courses
+                        from s in students.Where(x => x.CourseId == c.Id)
+                        select new
+                        {
+                            UserId = s.UserId,
+                            CategoryId = c.CategoryId
+                        }
+                    ).AsQueryable();
+
+                    var query = (
+                        from c in categories
+                        select new CategoryForGridView
+                        {
+                            Id = c.Id,
+                            Icon = c.Icon,
+                            Name = c.Name,
+                            Courses = courses.Where(x => x.CategoryId == c.Id).Count(),
+                            Students = queryStudents.Where(x => x.CategoryId == c.Id).Count()
+                        }
+                    ).AsQueryable();
+
+                    // Order by
+                    if (grid.columna == "Name")
+                    {
+                        query = grid.columna_orden == "DESC" ? query.OrderByDescending(x => x.Name)
+                                                             : query.OrderBy(x => x.Name);
+                    }
+
+                    var data = query.Skip(grid.pagina)
+                                    .Take(grid.limite)
+                                    .ToList();
+
+                    var total = query.Count();
+
+                    grid.SetData(data, total);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return grid.responde();
+        }
     }
 }
