@@ -18,5 +18,7 @@ namespace Model.Domain
         public string Icon { get; set; }
 
         public bool Deleted{ get; set; }
+
+        public ICollection<Course> Courses { get; set; }
     }
 }

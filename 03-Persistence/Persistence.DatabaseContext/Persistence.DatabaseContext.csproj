@@ -76,9 +76,9 @@
     <Compile Include="Migrations\201711181518540_Sprint-v2.0.Designer.cs">
       <DependentUpon>201711181518540_Sprint-v2.0.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201711292250044_Sprint-v3.0.cs" />
-    <Compile Include="Migrations\201711292250044_Sprint-v3.0.Designer.cs">
-      <DependentUpon>201711292250044_Sprint-v3.0.cs</DependentUpon>
+    <Compile Include="Migrations\201711301135378_Sprint-v3.0.cs" />
+    <Compile Include="Migrations\201711301135378_Sprint-v3.0.Designer.cs">
+      <DependentUpon>201711301135378_Sprint-v3.0.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -109,8 +109,8 @@
     <EmbeddedResource Include="Migrations\201711181518540_Sprint-v2.0.resx">
       <DependentUpon>201711181518540_Sprint-v2.0.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711292250044_Sprint-v3.0.resx">
-      <DependentUpon>201711292250044_Sprint-v3.0.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201711301135378_Sprint-v3.0.resx">
+      <DependentUpon>201711301135378_Sprint-v3.0.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

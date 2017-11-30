@@ -24,6 +24,7 @@ namespace Persistence.DatabaseContext.Migrations
             RenameColumn(table: "dbo.ReviewPerCourses", name: "Course_Id", newName: "CourseId");
             RenameColumn(table: "dbo.UsersPerCourses", name: "Course_Id", newName: "CourseId");
             DropPrimaryKey("dbo.Courses");
+            AddColumn("dbo.LessonsPerCourses", "Order", c => c.Int(nullable: false));
             AlterColumn("dbo.Categories", "Name", c => c.String(nullable: false));
             AlterColumn("dbo.Categories", "Icon", c => c.String(nullable: false));
             AlterColumn("dbo.Courses", "Id", c => c.Int(nullable: false, identity: true));
@@ -40,10 +41,10 @@ namespace Persistence.DatabaseContext.Migrations
             AlterColumn("dbo.UsersPerCourses", "CourseId", c => c.Int(nullable: false));
             AddPrimaryKey("dbo.Courses", "Id");
             CreateIndex("dbo.LessonsPerCourses", "CourseId");
-            CreateIndex("dbo.ReviewPerCourses", "CourseId");
-            CreateIndex("dbo.ReviewPerCourses", "UserId");
             CreateIndex("dbo.UsersPerCourses", "CourseId");
             CreateIndex("dbo.UsersPerCourses", "UserId");
+            CreateIndex("dbo.ReviewPerCourses", "CourseId");
+            CreateIndex("dbo.ReviewPerCourses", "UserId");
             AddForeignKey("dbo.LessonsPerCourses", "CourseId", "dbo.Courses", "Id", cascadeDelete: true);
             AddForeignKey("dbo.ReviewPerCourses", "CourseId", "dbo.Courses", "Id", cascadeDelete: true);
             AddForeignKey("dbo.ReviewPerCourses", "UserId", "dbo.AspNetUsers", "Id", cascadeDelete: true);
@@ -58,10 +59,10 @@ namespace Persistence.DatabaseContext.Migrations
             DropForeignKey("dbo.ReviewPerCourses", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.ReviewPerCourses", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.LessonsPerCourses", "CourseId", "dbo.Courses");
-            DropIndex("dbo.UsersPerCourses", new[] { "UserId" });
-            DropIndex("dbo.UsersPerCourses", new[] { "CourseId" });
             DropIndex("dbo.ReviewPerCourses", new[] { "UserId" });
             DropIndex("dbo.ReviewPerCourses", new[] { "CourseId" });
+            DropIndex("dbo.UsersPerCourses", new[] { "UserId" });
+            DropIndex("dbo.UsersPerCourses", new[] { "CourseId" });
             DropIndex("dbo.LessonsPerCourses", new[] { "CourseId" });
             DropPrimaryKey("dbo.Courses");
             AlterColumn("dbo.UsersPerCourses", "CourseId", c => c.String(maxLength: 128));
@@ -78,6 +79,7 @@ namespace Persistence.DatabaseContext.Migrations
             AlterColumn("dbo.Courses", "Id", c => c.String(nullable: false, maxLength: 128));
             AlterColumn("dbo.Categories", "Icon", c => c.String());
             AlterColumn("dbo.Categories", "Name", c => c.String());
+            DropColumn("dbo.LessonsPerCourses", "Order");
             AddPrimaryKey("dbo.Courses", "Id");
             RenameColumn(table: "dbo.UsersPerCourses", name: "CourseId", newName: "Course_Id");
             RenameColumn(table: "dbo.ReviewPerCourses", name: "CourseId", newName: "Course_Id");

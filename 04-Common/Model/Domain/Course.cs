@@ -31,6 +31,7 @@ namespace Model.Domain
         public int CategoryId { get; set; }
 
         public ICollection<LessonsPerCourse> Lessons { get; set; }
+        public ICollection<UsersPerCourses> Users { get; set; }
 
         [ForeignKey("AuthorId")]
         public ApplicationUser Author { get; set; }

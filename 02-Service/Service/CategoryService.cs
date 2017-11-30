@@ -4,6 +4,7 @@ using Microsoft.Owin.Logging;
 using Model.Auth;
 using Model.Custom;
 using Model.Domain;
+using Newtonsoft.Json;
 using NLog;
 using Persistence.DbContextScope;
 using Persistence.DbContextScope.Extensions;
@@ -21,6 +22,8 @@ namespace Service
         ResponseHelper InsertOrUpdate(Category model);
         AnexGRIDResponde GetAll(AnexGRID grid);
         Category Get(int id);
+        ResponseHelper Delete(int id);
+        string GetForMenu();
     }
 
     public class CategoryService : ICategoryService
@@ -82,6 +85,8 @@ namespace Service
                         ctx.SaveChanges();
                     }
                 }
+
+                Parameters.CategoryList = GetForMenu();
 
                 rh.SetResponse(true);
 
@@ -167,6 +172,74 @@ namespace Service
             }
 
             return grid.responde();
+        }
+
+        public string GetForMenu()
+        {
+            var result = "[]";
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    result = JsonConvert.SerializeObject(
+                        _categoryRepo.GetAll()
+                            .OrderBy(x => x.Name)
+                            .Select(x => new {
+                                Icon = x.Icon,
+                                Name = x.Name,
+                                Slug = x.Slug
+                            }).ToList()
+                        );
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return result;
+        }
+
+        public ResponseHelper Delete(int id)
+        {
+            var result = new ResponseHelper();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.Create())
+                {
+                    var hasCourses = _categoryRepo.Find(x =>
+                        x.Id == id
+                        && x.Courses.Any()
+                    ).Any();
+
+                    if (!hasCourses)
+                    {
+                        var originalCategoria = _categoryRepo.Single(x => x.Id == id);
+                        _categoryRepo.Delete(originalCategoria);
+
+                        result.SetResponse(true);
+                    }
+                    else
+                    {
+                        result.SetResponse(false, "Esta categoría no puede ser eliminado debido a que tiene cursos asignados.");
+                    }
+
+                    ctx.SaveChanges();
+                }
+
+                if (result.Response)
+                {
+                    Parameters.CategoryList = GetForMenu();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return result;
         }
     }
 }
