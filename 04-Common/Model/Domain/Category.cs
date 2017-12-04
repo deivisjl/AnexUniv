@@ -12,12 +12,12 @@ namespace Model.Domain
     {
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }        
+        public string Name { get; set; }
         public string Slug { get; set; }
         [Required]
         public string Icon { get; set; }
 
-        public bool Deleted{ get; set; }
+        public bool Deleted { get; set; }
 
         public ICollection<Course> Courses { get; set; }
     }

@@ -24,6 +24,7 @@ namespace Persistence.DatabaseContext
         public DbSet<LessonsPerCourse> LessonsPerCourses { get; set; }
         public DbSet<ReviewPerCourse> ReviewsPerCourses { get; set; }
         public DbSet<UsersPerCourses> UsersPerCourse { get; set; }
+        public DbSet<CourseLessonsLearnedPerStudent> CourseLessonsLearnedPerStudents { get; set; }
 
 
 

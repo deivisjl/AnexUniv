@@ -21,8 +21,6 @@ namespace Model.Domain
         [Required]
         public int CourseId { get; set; }
 
-        public int Order { get; set; }
-
         public bool Deleted { get; set; }
     }
 }

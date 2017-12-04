@@ -13,7 +13,7 @@ namespace Persistence.DatabaseContext.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201711301135378_Sprint-v3.0"; }
+            get { return "201712040137077_Sprint-v3.0"; }
         }
         
         string IMigrationMetadata.Source

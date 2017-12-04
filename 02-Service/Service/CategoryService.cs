@@ -24,6 +24,7 @@ namespace Service
         Category Get(int id);
         ResponseHelper Delete(int id);
         string GetForMenu();
+        IEnumerable<Category> GetAll();
     }
 
     public class CategoryService : ICategoryService
@@ -236,6 +237,28 @@ namespace Service
             }
             catch (Exception e)
             {
+                logger.Error(e.Message);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<Category> GetAll()
+        {
+            var result = new List<Category>();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.Create())
+                {
+
+                    result = _categoryRepo.GetAll().OrderBy(x => x.Name).ToList();
+                }
+
+            }
+            catch (Exception e)
+            {
+
                 logger.Error(e.Message);
             }
 

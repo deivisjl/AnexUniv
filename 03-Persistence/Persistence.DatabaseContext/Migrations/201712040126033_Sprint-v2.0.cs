@@ -34,10 +34,58 @@ namespace Persistence.DatabaseContext.Migrations
                 });
             
             AlterTableAnnotations(
+                "dbo.CourseLessonsLearnedPerStudents",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        LessonId = c.Int(nullable: false),
+                        UserId = c.String(maxLength: 128),
+                        Deleted = c.Boolean(nullable: false),
+                        CreatedAt = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 128),
+                        UpdatedAt = c.DateTime(),
+                        UpdatedBy = c.String(maxLength: 128),
+                        DeletedAt = c.DateTime(),
+                        DeletedBy = c.String(maxLength: 128),
+                    },
+                annotations: new Dictionary<string, AnnotationValues>
+                {
+                    { 
+                        "DynamicFilter_CourseLessonsLearnedPerStudent_IsDeleted",
+                        new AnnotationValues(oldValue: null, newValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition")
+                    },
+                });
+            
+            AlterTableAnnotations(
+                "dbo.LessonsPerCourses",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Content = c.String(),
+                        Video = c.String(),
+                        CourseId = c.Int(nullable: false),
+                        Deleted = c.Boolean(nullable: false),
+                        CreatedAt = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 128),
+                        UpdatedAt = c.DateTime(),
+                        UpdatedBy = c.String(maxLength: 128),
+                        DeletedAt = c.DateTime(),
+                        DeletedBy = c.String(maxLength: 128),
+                    },
+                annotations: new Dictionary<string, AnnotationValues>
+                {
+                    { 
+                        "DynamicFilter_LessonsPerCourse_IsDeleted",
+                        new AnnotationValues(oldValue: null, newValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition")
+                    },
+                });
+            
+            AlterTableAnnotations(
                 "dbo.Courses",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                         Slug = c.String(),
                         Description = c.String(),
@@ -60,32 +108,6 @@ namespace Persistence.DatabaseContext.Migrations
                 {
                     { 
                         "DynamicFilter_Course_IsDeleted",
-                        new AnnotationValues(oldValue: null, newValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition")
-                    },
-                });
-            
-            AlterTableAnnotations(
-                "dbo.LessonsPerCourses",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
-                        Content = c.String(),
-                        Video = c.String(),
-                        CourseId = c.Int(nullable: false),
-                        Deleted = c.Boolean(nullable: false),
-                        CreatedAt = c.DateTime(),
-                        CreatedBy = c.String(maxLength: 128),
-                        UpdatedAt = c.DateTime(),
-                        UpdatedBy = c.String(maxLength: 128),
-                        DeletedAt = c.DateTime(),
-                        DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
-                    },
-                annotations: new Dictionary<string, AnnotationValues>
-                {
-                    { 
-                        "DynamicFilter_LessonsPerCourse_IsDeleted",
                         new AnnotationValues(oldValue: null, newValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition")
                     },
                 });
@@ -131,7 +153,6 @@ namespace Persistence.DatabaseContext.Migrations
                         UpdatedBy = c.String(maxLength: 128),
                         DeletedAt = c.DateTime(),
                         DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
                     },
                 annotations: new Dictionary<string, AnnotationValues>
                 {
@@ -156,7 +177,6 @@ namespace Persistence.DatabaseContext.Migrations
                         UpdatedBy = c.String(maxLength: 128),
                         DeletedAt = c.DateTime(),
                         DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
                     },
                 annotations: new Dictionary<string, AnnotationValues>
                 {
@@ -173,13 +193,13 @@ namespace Persistence.DatabaseContext.Migrations
             AddColumn("dbo.Categories", "UpdatedBy", c => c.String(maxLength: 128));
             AddColumn("dbo.Categories", "DeletedAt", c => c.DateTime());
             AddColumn("dbo.Categories", "DeletedBy", c => c.String(maxLength: 128));
-            AddColumn("dbo.Courses", "Deleted", c => c.Boolean(nullable: false));
-            AddColumn("dbo.Courses", "CreatedAt", c => c.DateTime());
-            AddColumn("dbo.Courses", "CreatedBy", c => c.String(maxLength: 128));
-            AddColumn("dbo.Courses", "UpdatedAt", c => c.DateTime());
-            AddColumn("dbo.Courses", "UpdatedBy", c => c.String(maxLength: 128));
-            AddColumn("dbo.Courses", "DeletedAt", c => c.DateTime());
-            AddColumn("dbo.Courses", "DeletedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "Deleted", c => c.Boolean(nullable: false));
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "CreatedAt", c => c.DateTime());
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "CreatedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "UpdatedAt", c => c.DateTime());
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "UpdatedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "DeletedAt", c => c.DateTime());
+            AddColumn("dbo.CourseLessonsLearnedPerStudents", "DeletedBy", c => c.String(maxLength: 128));
             AddColumn("dbo.LessonsPerCourses", "Deleted", c => c.Boolean(nullable: false));
             AddColumn("dbo.LessonsPerCourses", "CreatedAt", c => c.DateTime());
             AddColumn("dbo.LessonsPerCourses", "CreatedBy", c => c.String(maxLength: 128));
@@ -187,6 +207,13 @@ namespace Persistence.DatabaseContext.Migrations
             AddColumn("dbo.LessonsPerCourses", "UpdatedBy", c => c.String(maxLength: 128));
             AddColumn("dbo.LessonsPerCourses", "DeletedAt", c => c.DateTime());
             AddColumn("dbo.LessonsPerCourses", "DeletedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.Courses", "Deleted", c => c.Boolean(nullable: false));
+            AddColumn("dbo.Courses", "CreatedAt", c => c.DateTime());
+            AddColumn("dbo.Courses", "CreatedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.Courses", "UpdatedAt", c => c.DateTime());
+            AddColumn("dbo.Courses", "UpdatedBy", c => c.String(maxLength: 128));
+            AddColumn("dbo.Courses", "DeletedAt", c => c.DateTime());
+            AddColumn("dbo.Courses", "DeletedBy", c => c.String(maxLength: 128));
             AddColumn("dbo.Incomes", "Deleted", c => c.Boolean(nullable: false));
             AddColumn("dbo.Incomes", "CreatedAt", c => c.DateTime());
             AddColumn("dbo.Incomes", "CreatedBy", c => c.String(maxLength: 128));
@@ -211,12 +238,15 @@ namespace Persistence.DatabaseContext.Migrations
             CreateIndex("dbo.Categories", "CreatedBy");
             CreateIndex("dbo.Categories", "UpdatedBy");
             CreateIndex("dbo.Categories", "DeletedBy");
-            CreateIndex("dbo.Courses", "CreatedBy");
-            CreateIndex("dbo.Courses", "UpdatedBy");
-            CreateIndex("dbo.Courses", "DeletedBy");
+            CreateIndex("dbo.CourseLessonsLearnedPerStudents", "CreatedBy");
+            CreateIndex("dbo.CourseLessonsLearnedPerStudents", "UpdatedBy");
+            CreateIndex("dbo.CourseLessonsLearnedPerStudents", "DeletedBy");
             CreateIndex("dbo.LessonsPerCourses", "CreatedBy");
             CreateIndex("dbo.LessonsPerCourses", "UpdatedBy");
             CreateIndex("dbo.LessonsPerCourses", "DeletedBy");
+            CreateIndex("dbo.Courses", "CreatedBy");
+            CreateIndex("dbo.Courses", "UpdatedBy");
+            CreateIndex("dbo.Courses", "DeletedBy");
             CreateIndex("dbo.Incomes", "CreatedBy");
             CreateIndex("dbo.Incomes", "UpdatedBy");
             CreateIndex("dbo.Incomes", "DeletedBy");
@@ -229,12 +259,15 @@ namespace Persistence.DatabaseContext.Migrations
             AddForeignKey("dbo.Categories", "CreatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Categories", "DeletedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Categories", "UpdatedBy", "dbo.AspNetUsers", "Id");
+            AddForeignKey("dbo.CourseLessonsLearnedPerStudents", "CreatedBy", "dbo.AspNetUsers", "Id");
+            AddForeignKey("dbo.CourseLessonsLearnedPerStudents", "DeletedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Courses", "CreatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Courses", "DeletedBy", "dbo.AspNetUsers", "Id");
+            AddForeignKey("dbo.Courses", "UpdatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.LessonsPerCourses", "CreatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.LessonsPerCourses", "DeletedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.LessonsPerCourses", "UpdatedBy", "dbo.AspNetUsers", "Id");
-            AddForeignKey("dbo.Courses", "UpdatedBy", "dbo.AspNetUsers", "Id");
+            AddForeignKey("dbo.CourseLessonsLearnedPerStudents", "UpdatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Incomes", "CreatedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Incomes", "DeletedBy", "dbo.AspNetUsers", "Id");
             AddForeignKey("dbo.Incomes", "UpdatedBy", "dbo.AspNetUsers", "Id");
@@ -257,12 +290,15 @@ namespace Persistence.DatabaseContext.Migrations
             DropForeignKey("dbo.Incomes", "UpdatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Incomes", "DeletedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Incomes", "CreatedBy", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Courses", "UpdatedBy", "dbo.AspNetUsers");
+            DropForeignKey("dbo.CourseLessonsLearnedPerStudents", "UpdatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.LessonsPerCourses", "UpdatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.LessonsPerCourses", "DeletedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.LessonsPerCourses", "CreatedBy", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Courses", "UpdatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Courses", "DeletedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Courses", "CreatedBy", "dbo.AspNetUsers");
+            DropForeignKey("dbo.CourseLessonsLearnedPerStudents", "DeletedBy", "dbo.AspNetUsers");
+            DropForeignKey("dbo.CourseLessonsLearnedPerStudents", "CreatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Categories", "UpdatedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Categories", "DeletedBy", "dbo.AspNetUsers");
             DropForeignKey("dbo.Categories", "CreatedBy", "dbo.AspNetUsers");
@@ -275,12 +311,15 @@ namespace Persistence.DatabaseContext.Migrations
             DropIndex("dbo.Incomes", new[] { "DeletedBy" });
             DropIndex("dbo.Incomes", new[] { "UpdatedBy" });
             DropIndex("dbo.Incomes", new[] { "CreatedBy" });
-            DropIndex("dbo.LessonsPerCourses", new[] { "DeletedBy" });
-            DropIndex("dbo.LessonsPerCourses", new[] { "UpdatedBy" });
-            DropIndex("dbo.LessonsPerCourses", new[] { "CreatedBy" });
             DropIndex("dbo.Courses", new[] { "DeletedBy" });
             DropIndex("dbo.Courses", new[] { "UpdatedBy" });
             DropIndex("dbo.Courses", new[] { "CreatedBy" });
+            DropIndex("dbo.LessonsPerCourses", new[] { "DeletedBy" });
+            DropIndex("dbo.LessonsPerCourses", new[] { "UpdatedBy" });
+            DropIndex("dbo.LessonsPerCourses", new[] { "CreatedBy" });
+            DropIndex("dbo.CourseLessonsLearnedPerStudents", new[] { "DeletedBy" });
+            DropIndex("dbo.CourseLessonsLearnedPerStudents", new[] { "UpdatedBy" });
+            DropIndex("dbo.CourseLessonsLearnedPerStudents", new[] { "CreatedBy" });
             DropIndex("dbo.Categories", new[] { "DeletedBy" });
             DropIndex("dbo.Categories", new[] { "UpdatedBy" });
             DropIndex("dbo.Categories", new[] { "CreatedBy" });
@@ -305,13 +344,6 @@ namespace Persistence.DatabaseContext.Migrations
             DropColumn("dbo.Incomes", "CreatedBy");
             DropColumn("dbo.Incomes", "CreatedAt");
             DropColumn("dbo.Incomes", "Deleted");
-            DropColumn("dbo.LessonsPerCourses", "DeletedBy");
-            DropColumn("dbo.LessonsPerCourses", "DeletedAt");
-            DropColumn("dbo.LessonsPerCourses", "UpdatedBy");
-            DropColumn("dbo.LessonsPerCourses", "UpdatedAt");
-            DropColumn("dbo.LessonsPerCourses", "CreatedBy");
-            DropColumn("dbo.LessonsPerCourses", "CreatedAt");
-            DropColumn("dbo.LessonsPerCourses", "Deleted");
             DropColumn("dbo.Courses", "DeletedBy");
             DropColumn("dbo.Courses", "DeletedAt");
             DropColumn("dbo.Courses", "UpdatedBy");
@@ -319,6 +351,20 @@ namespace Persistence.DatabaseContext.Migrations
             DropColumn("dbo.Courses", "CreatedBy");
             DropColumn("dbo.Courses", "CreatedAt");
             DropColumn("dbo.Courses", "Deleted");
+            DropColumn("dbo.LessonsPerCourses", "DeletedBy");
+            DropColumn("dbo.LessonsPerCourses", "DeletedAt");
+            DropColumn("dbo.LessonsPerCourses", "UpdatedBy");
+            DropColumn("dbo.LessonsPerCourses", "UpdatedAt");
+            DropColumn("dbo.LessonsPerCourses", "CreatedBy");
+            DropColumn("dbo.LessonsPerCourses", "CreatedAt");
+            DropColumn("dbo.LessonsPerCourses", "Deleted");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "DeletedBy");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "DeletedAt");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "UpdatedBy");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "UpdatedAt");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "CreatedBy");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "CreatedAt");
+            DropColumn("dbo.CourseLessonsLearnedPerStudents", "Deleted");
             DropColumn("dbo.Categories", "DeletedBy");
             DropColumn("dbo.Categories", "DeletedAt");
             DropColumn("dbo.Categories", "UpdatedBy");
@@ -341,7 +387,6 @@ namespace Persistence.DatabaseContext.Migrations
                         UpdatedBy = c.String(maxLength: 128),
                         DeletedAt = c.DateTime(),
                         DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
                     },
                 annotations: new Dictionary<string, AnnotationValues>
                 {
@@ -367,7 +412,6 @@ namespace Persistence.DatabaseContext.Migrations
                         UpdatedBy = c.String(maxLength: 128),
                         DeletedAt = c.DateTime(),
                         DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
                     },
                 annotations: new Dictionary<string, AnnotationValues>
                 {
@@ -403,36 +447,10 @@ namespace Persistence.DatabaseContext.Migrations
                 });
             
             AlterTableAnnotations(
-                "dbo.LessonsPerCourses",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
-                        Content = c.String(),
-                        Video = c.String(),
-                        CourseId = c.Int(nullable: false),
-                        Deleted = c.Boolean(nullable: false),
-                        CreatedAt = c.DateTime(),
-                        CreatedBy = c.String(maxLength: 128),
-                        UpdatedAt = c.DateTime(),
-                        UpdatedBy = c.String(maxLength: 128),
-                        DeletedAt = c.DateTime(),
-                        DeletedBy = c.String(maxLength: 128),
-                        Course_Id = c.String(maxLength: 128),
-                    },
-                annotations: new Dictionary<string, AnnotationValues>
-                {
-                    { 
-                        "DynamicFilter_LessonsPerCourse_IsDeleted",
-                        new AnnotationValues(oldValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition", newValue: null)
-                    },
-                });
-            
-            AlterTableAnnotations(
                 "dbo.Courses",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                         Slug = c.String(),
                         Description = c.String(),
@@ -455,6 +473,54 @@ namespace Persistence.DatabaseContext.Migrations
                 {
                     { 
                         "DynamicFilter_Course_IsDeleted",
+                        new AnnotationValues(oldValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition", newValue: null)
+                    },
+                });
+            
+            AlterTableAnnotations(
+                "dbo.LessonsPerCourses",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Content = c.String(),
+                        Video = c.String(),
+                        CourseId = c.Int(nullable: false),
+                        Deleted = c.Boolean(nullable: false),
+                        CreatedAt = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 128),
+                        UpdatedAt = c.DateTime(),
+                        UpdatedBy = c.String(maxLength: 128),
+                        DeletedAt = c.DateTime(),
+                        DeletedBy = c.String(maxLength: 128),
+                    },
+                annotations: new Dictionary<string, AnnotationValues>
+                {
+                    { 
+                        "DynamicFilter_LessonsPerCourse_IsDeleted",
+                        new AnnotationValues(oldValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition", newValue: null)
+                    },
+                });
+            
+            AlterTableAnnotations(
+                "dbo.CourseLessonsLearnedPerStudents",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        LessonId = c.Int(nullable: false),
+                        UserId = c.String(maxLength: 128),
+                        Deleted = c.Boolean(nullable: false),
+                        CreatedAt = c.DateTime(),
+                        CreatedBy = c.String(maxLength: 128),
+                        UpdatedAt = c.DateTime(),
+                        UpdatedBy = c.String(maxLength: 128),
+                        DeletedAt = c.DateTime(),
+                        DeletedBy = c.String(maxLength: 128),
+                    },
+                annotations: new Dictionary<string, AnnotationValues>
+                {
+                    { 
+                        "DynamicFilter_CourseLessonsLearnedPerStudent_IsDeleted",
                         new AnnotationValues(oldValue: "EntityFramework.DynamicFilters.DynamicFilterDefinition", newValue: null)
                     },
                 });

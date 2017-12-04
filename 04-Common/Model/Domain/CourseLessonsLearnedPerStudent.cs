@@ -16,7 +16,7 @@ namespace Model.Domain
 
         public LessonsPerCourse Lesson { get; set; }
         [Required]
-        public int LessonsId { get; set; }
+        public int LessonId { get; set; }
 
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
