@@ -72,6 +72,7 @@
     <Compile Include="Domain\ReviewPerCourse.cs" />
     <Compile Include="Domain\UsersPerCourses.cs" />
     <Compile Include="Helper\AuditEntity.cs" />
+    <Compile Include="Custom\InstructorWidget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

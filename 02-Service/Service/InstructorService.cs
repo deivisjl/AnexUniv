@@ -16,6 +16,7 @@ namespace Service
 {
     public interface IInstructorService {
         IEnumerable<InstructorCourseForGridView> GetAll(string userId);
+        InstructorWidget Widget(string userId);
     }
     class InstructorService : IInstructorService
     {
@@ -74,6 +75,55 @@ namespace Service
                         ).ToList();
                 }
             } catch (Exception e) {
+                logger.Error(e.Message);
+            }
+
+            return result;
+        }
+
+        public InstructorWidget Widget(string userId)
+        {
+            var result = new InstructorWidget();
+
+            try
+            {
+
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+
+                    var courses = ctx.GetEntity<Course>();
+                    var usersPerCourses = ctx.GetEntity<UsersPerCourses>();
+                    var incomes = ctx.GetEntity<Incomes>();
+                    var reviewPerCourse = ctx.GetEntity<ReviewPerCourse>();
+
+                    var queryIncome = incomes.Where(x =>
+                        x.EntityType == Enums.EntityType.Courses
+                        && x.IncomeType == Enums.IncomeType.TeacherTotal
+                    );
+
+                    var queryCourse = courses.Where(x => x.AuthorId == userId);
+
+                    var currentYear = DateTime.Now.Year;
+                    var currentMonth = DateTime.Now.Month;
+
+                    result.Total = queryIncome.Where(x =>
+                        queryCourse.Any(y => y.Id == x.EntityID)
+                        && x.CreatedAt.Value.Year == currentYear
+                        && x.CreatedAt.Value.Month == currentMonth
+                    ).Select(x => x.Total).DefaultIfEmpty().Sum();
+
+                    result.Students = usersPerCourses.Where(x =>
+                        queryCourse.Any(y => y.Id == x.CourseId)
+                    ).Count();
+
+                    result.Reputation = reviewPerCourse.Where(x =>
+                        queryCourse.Any(y => y.Id == x.CourseId)
+                    ).Select(x => x.Vote).DefaultIfEmpty().Average();
+                    
+                }
+            }
+            catch (Exception e)
+            {
                 logger.Error(e.Message);
             }
 

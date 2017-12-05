@@ -20,6 +20,12 @@ namespace FrontEnd.Controllers
         {
             return View(_instructorService.GetAll(CurrentUserHelper.Get.UserId));
         }
+        [HttpPost]
+        public JsonResult GetWidget()
+        {
+            var model = _instructorService.Widget(CurrentUserHelper.Get.UserId);
+            return Json(model);
+        }
 
         public ActionResult CreateCourse()
         {

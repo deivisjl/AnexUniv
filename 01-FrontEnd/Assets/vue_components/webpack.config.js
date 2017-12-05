@@ -5,7 +5,8 @@ module.exports = {
   entry: {
     global: './src/global.main.js',
     welcome: './src/welcome.main.js',
-    category: './src/category.main.js'
+    category: './src/category.main.js',
+    instructor: './src/instructor.main.js'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
