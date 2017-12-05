@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<InstructorCourseForGridView>
+@{
     ViewBag.Title = "Instructor";
 }
 <h1 class="page-header">
@@ -27,29 +28,33 @@
 </div>
 
 <div class="list-group list-group-courses padding-top">
-    @for (var i = 0; i < 4; i++)
+    @foreach(var m in Model)
     {
         <div class="list-group-item income-report">
             <div class="row">
                 <div class="col-sm-2">
-                    <a href="~/instructor/course/1">
-                        <img class="img-responsive" src="~/Assets/images/courses/technology-course.jpg" alt="image course" />
+                    <a href="~/instructor/course/@m.Id">
+                        <img class="img-responsive" src="~/@m.Image" alt="@m.Name" />
                     </a>
                 </div>
                 <div class="col-sm-4">
-                    <h4><a href="~/instructor/course/1">Curso de tecnología y desarrollo web</a></h4>
-                    <p class="text-justify">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                    <h4><a href="~/instructor/course/@m.Id">@m.Name</a></h4>
+                    <p class="text-justify">@m.Description</p>
                 </div>
                 <div class="col-sm-2 text-center">
                     <div class="income">
                         <h5>Total ingreso</h5>
-                        <span class="description">$ 200.00</span>
+                        <span class="description">
+                            
+                        </span>
                     </div>
                 </div>
                 <div class="col-sm-2 text-center">
                     <div class="income">
                         <h5>Ingreso del mes</h5>
-                        <span class="description">$ 10.00</span>
+                        <span class="description">
+                            @m.Total
+                        </span>
                     </div>
                 </div>
                 <div class="col-sm-2 text-center">

@@ -59,6 +59,8 @@ namespace Service
                         newRecord = true;
                         model.AuthorId = CurrentUserHelper.Get.UserId;
                         model.Status = Enums.Status.Pending;
+                        model.Image1 = "assets/images/courses/no-image.jpg";
+                        model.Image2 = model.Image1;
 
                         var studentRole = _roleRepo.SingleOrDefault(x => x.Name == RolNames.Teacher);
 

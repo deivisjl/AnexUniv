@@ -12,12 +12,13 @@ namespace FrontEnd.Controllers
     {
         private ICourseService _courseService = DependecyFactory.GetInstance<ICourseService>();
         private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
+        private IInstructorService _instructorService = DependecyFactory.GetInstance<IInstructorService>();
 
         // GET: Course
         [Authorize(Roles = RolNames.Teacher)]
         public ActionResult Index()
         {
-            return View();
+            return View(_instructorService.GetAll(CurrentUserHelper.Get.UserId));
         }
 
         public ActionResult CreateCourse()
