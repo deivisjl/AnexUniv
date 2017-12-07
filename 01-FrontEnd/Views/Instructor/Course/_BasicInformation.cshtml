@@ -3,6 +3,7 @@
 
 @using (Html.BeginForm("SaveCourse", "Instructor", FormMethod.Post))
 {
+    <input type="hidden" name="Id" value="@Model.Course.Id" />
     <div class="alert-container"></div>
 
     <div class="form-group">

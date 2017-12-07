@@ -7,14 +7,18 @@ using Persistence.DbContextScope;
 using Persistence.Repository;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Service
 {
     public interface ICourseService {
         ResponseHelper InsertOrUpdateBasicInformation(Course model);
+        Course Get(int id);
+        ResponseHelper AddImage(int id, HttpPostedFileBase file);
     }
     class CourseService : ICourseService
     {
@@ -35,6 +39,25 @@ namespace Service
             _courseRepo = courseRepo;
             _roleRepo = roleRepo;
             _userRepo = userRepo;
+        }
+
+        public Course Get(int id)
+        {
+            var result = new Course();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    result = _courseRepo.Single(x => x.Id == id);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return result;
         }
 
         public ResponseHelper InsertOrUpdateBasicInformation(Course model)
@@ -99,6 +122,52 @@ namespace Service
             }
 
             return rh;
-        }        
+        }
+
+        public ResponseHelper AddImage(int id, HttpPostedFileBase file)
+        {
+            var rh = new ResponseHelper();
+
+            try
+            {
+                // Creamos la ruta
+                var path = DirectoryPath.CourseImage(id);
+                DirectoryPath.Create(path);
+
+                // Ahora vamos a crear los nombres para el archivo
+                var fileName = path
+                               + DateTime.Now.ToString("yyyyMMddHHmmss")
+                               + Path.GetExtension(file.FileName);
+
+                // La ruta completa
+                var fullPath = HttpContext.Current.Server.MapPath("~/" + fileName);
+
+                // La ruta donde lo vamos guardar
+                file.SaveAs(fullPath);
+
+                using (var ctx = _dbContextScopeFactory.Create())
+                {
+                    // Obtenemos el curso
+                    var originalCourse = _courseRepo.Single(x => x.Id == id);
+
+                    // Seteamos la imagen
+                    originalCourse.Image1 = fileName;
+                    originalCourse.Image2 = fileName;
+
+                    _courseRepo.Update(originalCourse);
+
+                    ctx.SaveChanges();
+                    rh.SetResponse(true);
+                    rh.Result = fileName;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+                rh.SetResponse(false, e.Message);
+            }
+
+            return rh;
+        }
     }
 }

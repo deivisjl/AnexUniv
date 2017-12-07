@@ -3,6 +3,7 @@ using FrontEnd.App_Start;
 using FrontEnd.ViewModels;
 using Model.Domain;
 using Service;
+using System.Web;
 using System.Web.Mvc;
 
 namespace FrontEnd.Controllers
@@ -35,6 +36,15 @@ namespace FrontEnd.Controllers
             return View(model);
         }
 
+        public ActionResult Course(int id)
+        {
+            var model = new CourseBasicInformationViewModel();
+            model.Categories = _categoryService.GetAll();
+            model.Course = _courseService.Get(id);
+
+            return View(model);
+        }
+
         [HttpPost]
         public JsonResult SaveCourse(Course model) {
 
@@ -59,9 +69,19 @@ namespace FrontEnd.Controllers
 
         }
 
-        public ActionResult Course(int id)
+        [HttpPost]
+        public JsonResult AddImage(int id, HttpPostedFileBase file)
         {
-            return View();
+            var rh = new ResponseHelper();
+
+            if (file == null)
+            {
+                return Json(rh.SetResponse(false, "Se requiere la imagen"));
+            }
+
+            return Json(
+                _courseService.AddImage(id, file)
+            );
         }
 
         [HttpPost]
