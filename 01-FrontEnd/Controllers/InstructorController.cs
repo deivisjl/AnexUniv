@@ -14,6 +14,7 @@ namespace FrontEnd.Controllers
         private ICourseService _courseService = DependecyFactory.GetInstance<ICourseService>();
         private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
         private IInstructorService _instructorService = DependecyFactory.GetInstance<IInstructorService>();
+        private ILessonService _lessonService = DependecyFactory.GetInstance<ILessonService>();
 
         // GET: Course
         [Authorize(Roles = RolNames.Teacher)]
@@ -89,5 +90,45 @@ namespace FrontEnd.Controllers
         {
             return Json(null);
         }
+
+        #region Lessons
+        [HttpPost]
+        public JsonResult InsertLesson(LessonCreateViewModel model)
+        {
+            var rh = new ResponseHelper();
+
+            if (!ModelState.IsValid)
+            {
+                var validations = ModelState.GetErrors();
+                rh.SetValidations(validations);
+            }
+            else
+            {
+                rh = _lessonService.Insert(new LessonsPerCourse
+                {
+                    Name = model.Name,
+                    CourseId = model.CourseId
+                });
+            }
+
+            return Json(rh);
+        }
+
+        [HttpPost]
+        public JsonResult GetAllLessons(int courseId)
+        {
+            return Json(
+                _lessonService.GetAll(courseId)
+            );
+        }
+
+        [HttpPost]
+        public JsonResult GetLesson(int id)
+        {
+            return Json(
+                _lessonService.Get(id)
+            );
+        }
+        #endregion
     }
 }

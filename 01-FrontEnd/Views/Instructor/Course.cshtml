@@ -24,7 +24,7 @@
             @Html.Partial("Course/_Image", Model.Course.Id)
         </div>
         <div role="tabpanel" class="tab-pane" id="lessons">
-            @Html.Partial("Course/_Lessons", Model.Course.Id)
+            @Html.Partial("Course/_Lessons", Model.Course)
         </div>
     </div>
 </div>
@@ -34,9 +34,15 @@
 
 @section scripts {
     <script src="~/Assets/bower_components/trumbowyg/dist/trumbowyg.min.js"></script>
+    <script src="~/Assets/vue_components/dist/instructor.components.js"></script>
     <script>
         $(document).ready(function () {
             $('#wysiwyg').trumbowyg();
         })
+    </script>
+    <script>
+        function refreshImage(r) {
+            $("#courseImage").attr('src',App.helpers.url.base() + r.Result);
+        }
     </script>
 }
