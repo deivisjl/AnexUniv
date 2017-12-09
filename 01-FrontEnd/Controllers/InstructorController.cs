@@ -130,5 +130,35 @@ namespace FrontEnd.Controllers
             );
         }
         #endregion
+
+        [HttpPost, ValidateInput(false)]
+        public JsonResult UpdateLesson(LessonUpdateViewModel model)
+        {
+            var rh = new ResponseHelper();
+
+            if (!ModelState.IsValid)
+            {
+                var validations = ModelState.GetErrors();
+                rh.SetValidations(validations);
+            }
+            else
+            {
+                rh = _lessonService.Update(new LessonsPerCourse
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    Content = model.Content,
+                    Video = model.Video
+                });
+            }
+
+            return Json(rh);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteLesson(int id)
+        {
+            return Json(_lessonService.Delete(id));
+        }
     }
 }

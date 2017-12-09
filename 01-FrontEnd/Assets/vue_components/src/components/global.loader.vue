@@ -1,5 +1,8 @@
 <template>
-  <div class="block-loading" :style="{ height: height + 'px' }"></div>
+<div :style="{height: height + 'px', position: 'relative'}">
+	<div class="block-loading" ></div>
+</div>
+  
 </template>
 
 <script>

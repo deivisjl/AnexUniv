@@ -2,23 +2,8 @@
 	<div>
 	<loader  v-if="loading" height="200"></loader>
 
-		<ul v-if="!loading" class="list-group">
-	<!-- Listado de lecciones -->
-        <!-- <li class="list-group-item">
-            <div class="input-group">
-                <input type="text" class="form-control" value="Lección #@h" readonly>
-                <span class="input-group-btn">
-                    <button class="btn btn-danger" type="button" title="Eliminar">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                    <button data-toggle="modal" data-target="#lesson-edit" class="btn btn-default" type="button" title="Editar">
-                        <i class="fa fa-edit"></i>
-                    </button>
-                </span>
-            </div>
-        </li> -->
-
-        <!-- Listado de las lecciones creadas -->
+<ul v-if="!loading" class="list-group">	
+    <!-- Listado de las lecciones creadas -->
     <li v-for="item in lessons" class="list-group-item">
         <div class="row">
           <div class="col-xs-2">
@@ -28,10 +13,10 @@
             <div class="input-group">
                 <input type="text" class="form-control" :value="item.Name" readonly>
                 <span class="input-group-btn">
-                    <button  class="btn btn-danger" type="button" title="Eliminar">
+                    <button  @click="remove(item.Id)" class="btn btn-danger" type="button" title="Eliminar">
                         <i class="fa fa-trash"></i>
                     </button>
-                    <button  type="button" data-toggle="modal" data-target="#lesson-edit" class="btn btn-default" title="Editar">
+                    <button  type="button" @click="get(item.Id)" data-toggle="modal" data-target="#lesson-edit" class="btn btn-default" title="Editar">
                         <i class="fa fa-edit"></i>
                     </button>
                 </span>
@@ -54,6 +39,49 @@
 	        </div>
 	    </li>
 	</ul>
+
+  <!-- Modal -->
+  <div class="modal fade" id="lesson-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">{{ entry.Name }}</h4>
+              </div>
+              <div class="modal-body">
+                <div v-if="entry.Error.length > 0" class="alert alert-danger">{{ entry.Error }}</div>
+
+                <loader v-if="loadingEdit" height="200"></loader>
+                <div v-if="!loadingEdit">
+                  <div class="form-group">
+                      <label>Nombre <span class="text-danger">*</span></label>
+                      <input v-model="entry.Name" type="text" name="Name" class="form-control" value="Lección #1" />
+                  </div>
+
+                  <!-- Un pequeño hack para resolver esto -->
+                  <div class="form-group">
+                      <label>Contenido <span class="required">*</span></label>
+                      <textarea id="wysiwyg" name="Content" class="form-control">{{ entry.Content }}</textarea>
+                      <input id="wysiwygHidden" type="hidden" v-model="entry.Content" />
+                  </div>
+
+                  <div class="form-group">
+                      <label>Video <small>[Opcional]</small></label>
+                      <input v-model="entry.Video" type="text" name="Video" class="form-control" />
+                      <small>Ingrese el código de su video</small>
+                  </div>
+
+                  <div class="text-right">
+                      <button @click="update" type="button" class="btn btn-default">
+                          Guardar
+                      </button>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
 	</div>
 </template>
 
@@ -73,6 +101,7 @@ export default{
 	data(){
 		return{
 			loading: false,
+			loadingEdit: false,
 			newEntry:{
 				Name: '',
 				Error: ''
@@ -93,6 +122,10 @@ export default{
 		this.all();
 	},
 
+	updated(){
+		$('#wysiwyg').trumbowyg();
+	},
+
 	computed:{},
 
 	methods:{
@@ -107,8 +140,38 @@ export default{
 		        self.loading = false;
 		      }, 'json')
 		},
-		get(){},
-		update(){},
+		get(id) {
+	      var self = this;
+	      self.loadingEdit = true;
+
+	      $.post('/instructor/GetLesson', {
+	        id: id
+	      }, function(r) {
+	        self.entry.Id = r.Id;
+	        self.entry.Name = r.Name;
+	        self.entry.Content = r.Content;
+	        self.entry.Video = r.Video;
+	        self.entry.Error = '';
+
+	        self.loadingEdit = false;
+	      }, 'json')
+	    },
+		update(){
+			let self = this;
+		      self.loadingEdit = true;
+
+		      $.post('/instructor/updateLesson', self.entry, function(r) {
+		        self.loadingEdit = false;
+
+		        if(!r.Response) {
+		          // Si hay error mostramos mensaje
+		          self.entry.Error = r.Message;
+		        } else {
+		          self.entry.Error = '';
+		          self.all();
+		        }
+		      }, 'json')
+		},
 		insert(){
 			let self = this;
 			self.loading = true;
@@ -130,7 +193,21 @@ export default{
 
 			}, 'json')
 		},
-		delete(){}
+		 remove(id) {
+	      if(!confirm('Esta seguro de realizar esta acción')) {
+	        return;
+	      }
+
+	      let self = this;
+	      self.loading = true;
+
+	      $.post('/instructor/deleteLesson', {
+	        id: id
+	      }, function(r) {
+	        self.loading = false;
+	        self.all();
+	      }, 'json')
+	    },
 	},
 }
 
