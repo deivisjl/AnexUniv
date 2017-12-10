@@ -1,9 +1,14 @@
-﻿using System.Web.Mvc;
+﻿using Common;
+using Service;
+using System.Web.Mvc;
 
 namespace FrontEnd.Controllers
 {
     public class CourseController : Controller
     {
+        private ICourseService _courseService = DependecyFactory.GetInstance<ICourseService>();
+        private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
+
         [Route("course/{id}/{slug}")]
         public ActionResult Index(int id, string slug)
         {
@@ -18,8 +23,16 @@ namespace FrontEnd.Controllers
                 return Redirect("~");
             }
 
-            ViewBag.Title = slug;
-            return View();
+            var model = _categoryService.Get(id);
+
+            ViewBag.Title = model.Name;
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult All(int categoryId) {
+
+            return Json(_courseService.GetAll(categoryId));
         }
     }
 }

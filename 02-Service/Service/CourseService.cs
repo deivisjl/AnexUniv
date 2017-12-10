@@ -1,9 +1,11 @@
 ﻿using Common;
 using Common.ProjectHelpers;
 using Model.Auth;
+using Model.Custom;
 using Model.Domain;
 using NLog;
 using Persistence.DbContextScope;
+using Persistence.DbContextScope.Extensions;
 using Persistence.Repository;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ using System.Web;
 namespace Service
 {
     public interface ICourseService {
+        IEnumerable<CourseCard> GetAll(int categoryId = 0);
         ResponseHelper InsertOrUpdateBasicInformation(Course model);
         Course Get(int id);
         ResponseHelper AddImage(int id, HttpPostedFileBase file);
@@ -168,6 +171,73 @@ namespace Service
             }
 
             return rh;
+        }
+
+        public IEnumerable<CourseCard> GetAll(int categoryId = 0)
+        {
+            var result = new List<CourseCard>();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    var courses = ctx.GetEntity<Course>();
+                    var categories = ctx.GetEntity<Category>();
+                    var lessons = ctx.GetEntity<LessonsPerCourse>();
+                    var students = ctx.GetEntity<UsersPerCourses>();
+                    var users = ctx.GetEntity<ApplicationUser>();
+
+                    var queryStudents = (
+                        from c in courses
+                        from s in students.Where(x => x.CourseId == c.Id)
+                        select new
+                        {
+                            UserId = s.UserId,
+                            CourseId = c.Id
+                        }
+                    ).AsQueryable();
+
+                    var query = (
+                        from c in courses
+                        from u in users.Where(x => x.Id == c.AuthorId)
+                        from ca in categories.Where(x => x.Id == c.CategoryId)
+                        //where c.Status == Enums.Status.Approved
+                        select new CourseCard
+                        {
+                            Id = c.Id,
+                            CategoryId = ca.Id,
+                            CategoryName = ca.Name,
+                            CategoryIcon = ca.Icon,
+                            Name = c.Name,
+                            Slug = c.Slug,
+                            Description = c.Description,
+                            Image = c.Image1,
+                            Instructor = (u.LastName + ", " + u.Name),
+                            Price = c.Price,
+                            Vote = c.Vote,
+                            Students = queryStudents.Where(x => x.CourseId == c.Id).Count()
+                        }
+                    ).AsQueryable();
+
+                    if (categoryId == 0)
+                    {
+                        query = query.OrderBy(x => Guid.NewGuid());
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.CategoryId == categoryId)
+                                     .OrderBy(x => Guid.NewGuid());
+                    }
+
+                    result = query.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return result;
         }
     }
 }
