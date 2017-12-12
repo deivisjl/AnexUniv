@@ -19,6 +19,7 @@ namespace Service
     {
         ResponseHelper Update(ApplicationUser applicationUser);
         AnexGRIDResponde GetAll(AnexGRID grid);
+        decimal GetCredits(string userId);
     }
 
     public class UserService : IUserService
@@ -122,6 +123,24 @@ namespace Service
             }
 
             return grid.responde();
+        }
+
+        public decimal GetCredits(string userId)
+        {
+            decimal credits = 0;
+
+            try {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly()) {
+
+                    credits = _applicationUserRepo.Find(x => x.Id == userId)
+                                        .Select(x => x.Credit).Single();
+                }
+            } catch (Exception e) {
+
+                logger.Error(e.Message);
+            }
+
+            return credits;
         }
     }
 }

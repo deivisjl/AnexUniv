@@ -6,6 +6,8 @@ $(document).ready(function () {
         components: Components
     })
 
+    App.helpers.user.getCredits();
+
     // Bootstrap ToolTips
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -192,6 +194,17 @@ App.helpers.video = {};
 App.helpers.string = {};
 App.helpers.number = {};
 App.helpers.html = {};
+App.helpers.user = {};
+
+App.helpers.user = {
+    getCredits() {
+        let target = $('#userCredits');
+
+        $.post(App.helpers.url.base() + 'user/GetCreditsByCurrentUser', function (r) {
+            target.text('$ ' + parseInt(r));
+        }, 'json')
+    }
+}
 
 App.helpers.video = {
     getYoutubeVideo(options) {

@@ -9,6 +9,7 @@ using Persistence.DbContextScope.Extensions;
 using Persistence.Repository;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,18 +32,27 @@ namespace Service
         private readonly IRepository<Course> _courseRepo;
         private readonly IRepository<ApplicationRole> _roleRepo;
         private readonly IRepository<ApplicationUserRole> _userRepo;
+        private readonly IRepository<ApplicationUser> _applicationUserRepo;
+        private readonly IRepository<UsersPerCourses> _userPerCourseRepo;
+        private readonly IRepository<Incomes> _incomeRepo;
 
         public CourseService(
                 IDbContextScopeFactory dbContextScopeFactory,
                 IRepository<Course> courseRepo,
                 IRepository<ApplicationRole> roleRepo,
-                IRepository<ApplicationUserRole> userRepo
+                IRepository<ApplicationUserRole> userRepo,
+                IRepository<ApplicationUser> applicationUserRepo,
+                IRepository<UsersPerCourses> userPerCourseRepo,
+                IRepository<Incomes> incomeRepo
             )
         {
             _dbContextScopeFactory = dbContextScopeFactory;
             _courseRepo = courseRepo;
             _roleRepo = roleRepo;
             _userRepo = userRepo;
+            _applicationUserRepo = applicationUserRepo;
+            _userPerCourseRepo = userPerCourseRepo;
+            _incomeRepo = incomeRepo;
         }
 
         public Course Get(int id)
@@ -335,6 +345,111 @@ namespace Service
             }
 
             return result;
+        }
+
+        public ResponseHelper Purchase(int courseId, string userId)
+        {
+            var rh = new ResponseHelper();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateWithTransaction(
+                    IsolationLevel.Serializable
+                ))
+                {
+                    var user = _applicationUserRepo.Single(x => x.Id == userId);
+                    var course = _courseRepo.Single(x => x.Id == courseId);
+
+                    var hasTaken = _userPerCourseRepo.Find(x =>
+                        x.UserId == userId
+                        && x.CourseId == courseId
+                    ).Any();
+
+                    // Si el curso ya fue tomado no hacemos nada
+                    if (hasTaken)
+                    {
+                        rh.SetResponse(false, "El curso ya ha sido tomado por este alumno");
+                    }
+                    // Si el precio del curso es mayor a los créditos actuales
+                    else if (Convert.ToDecimal(course.Price) > user.Credit)
+                    {
+                        rh.SetResponse(false, "Usted no cuenta con los créditos necesarios para adquirir el curso");
+                    }
+                    else
+                    {
+                        var hasPriorCourses = _userPerCourseRepo.Find(x =>
+                            x.UserId == userId
+                        ).Any();
+
+                        // Verificamos si es la primera vez que compra el curso. Si fuera así, asignamos el rol de estudiante
+                        if (!hasPriorCourses)
+                        {
+                            var role = _roleRepo.Single(x =>
+                                x.Name == RolNames.Student
+                            );
+
+                            _userRepo.Insert(new ApplicationUserRole
+                            {
+                                UserId = userId,
+                                RoleId = role.Id
+                            });
+                        }
+
+                        // Asignamos un curso a un usuario
+                        _userPerCourseRepo.Insert(new UsersPerCourses
+                        {
+                            UserId = userId,
+                            CourseId = courseId
+                        });
+
+                        // Actualizamos el crédito del usuario
+                        user.Credit = user.Credit - Convert.ToDecimal(course.Price);
+                        _applicationUserRepo.Update(user);
+
+                        var incomes = new List<Incomes>
+                        {
+                            // Ingreso total
+                            new Incomes {
+                                EntityType = Enums.EntityType.Courses,
+                                EntityID = course.Id,
+                                IncomeType = Enums.IncomeType.Total,
+                                Total = Convert.ToDecimal(course.Price)
+                            },
+
+                            // Ingreso profesor
+                            new Incomes
+                            {
+                                EntityType = Enums.EntityType.Courses,
+                                EntityID = course.Id,
+                                IncomeType = Enums.IncomeType.TeacherTotal,
+                                Total = course.Price * (Convert.ToDecimal(Parameters.TeacherComission) / 100)
+                            },
+
+                            // Ingreso para la empresa
+                            new Incomes
+                            {
+                                EntityType = Enums.EntityType.Courses,
+                                EntityID = course.Id,
+                                IncomeType = Enums.IncomeType.CompanyTotal,
+                                Total = Convert.ToDecimal(course.Price) * (Convert.ToDecimal(Parameters.SalesCommission) / 100)
+                            }
+                        };
+
+                        _incomeRepo.Insert(incomes);
+
+                        rh.SetResponse(true);
+                    }
+
+                    ctx.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+                rh.SetResponse(false, e.Message);
+            }
+
+            return rh;
         }
     }
 }

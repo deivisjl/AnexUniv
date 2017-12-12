@@ -34,5 +34,10 @@ namespace FrontEnd.Controllers
 
             return Json(_courseService.GetAll(categoryId));
         }
+
+        [HttpPost, Authorize]
+        public JsonResult Purchase(int courseId) {
+            return Json(_courseService.Purchase(courseId, CurrentUserHelper.Get.UserId));
+        }
     }
 }
