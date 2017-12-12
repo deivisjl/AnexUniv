@@ -11,6 +11,7 @@
 
 <script>
 export default {
+
   name: 'rating',
   props: {
     value: {
@@ -18,6 +19,7 @@ export default {
       required: true
     }
   },
+
   computed: {
     star1() {
       return {
@@ -50,5 +52,6 @@ export default {
       }
     }
   }
+  
 }
 </script>

@@ -1,41 +1,33 @@
-﻿@{ 
-    var price = 200.99;
-}
+﻿@model CourseLandingPage
 
 <div class="col-sm-4">
     <div class="side">
-        <img src="~/Assets/images/courses/technology-course.jpg" class="img-responsive" alt="tecnología" />
+        <img src="~/@Model.Image" class="img-responsive" alt="@Model.CategoryName" />
 
         <span class="price">
-            <price :value="@price"></price>
+            <price :value="@Model.Price"></price>
         </span>
 
-        <button class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#buy-course">
-            <i class="fa fa-shopping-cart"></i> Comprar
-        </button>
+        @if (Request.IsAuthenticated)
+        {
+            <button class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#buy-course">
+                <i class="fa fa-shopping-cart"></i> Comprar
+            </button>
+        }
+        else
+        {
+            <a href="~/account/login" class="btn btn-success btn-lg btn-block">
+                <i class="fa fa-shopping-cart"></i> Comprar
+            </a>
+        }
 
         <h3>Incluye:</h3>
         <ul>
             <li><i class="fa fa-credit-card"></i> Pago único</li>
             <li><i class="fa fa-certificate"></i> Certificado de finalización</li>
             <li><i class="fa fa-clock-o"></i> Acceso de por vida</li>
-            <li><i class="fa fa-paperclip"></i> 45 lecciones</li>
+            <li><i class="fa fa-paperclip"></i> @Model.Lessons.Count() lecciones</li>
         </ul>
-    </div>
-</div>
-
-<!-- Video Modal -->
-<div class="modal fade" id="promotion-video" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <!-- 16:9 aspect ratio -->
-                <div class="embed-responsive embed-responsive-16by9 video-target"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -44,12 +36,14 @@
     <div class="modal-dialog" role="document">
         @using (Html.BeginForm("Purchase", "Course", FormMethod.Post))
         {
+            <input type="hidden" name="courseId" value="@Model.Id" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h4>Confirmación de pago</h4>
                 </div>
                 <div class="modal-body">
-                    Usted esta a punto de realizar una compra, este le descontará <b>$ @price</b> de su cuenta. <b>¿Está seguro de realizar esta compra?</b>
+                    <div class="alert-container"></div>
+                    Usted esta a punto de realizar una compra, este le descontará <b>$ @Model.Price</b> de su cuenta. <b>¿Está seguro de realizar esta compra?</b>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

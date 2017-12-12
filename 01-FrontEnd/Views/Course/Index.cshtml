@@ -1,16 +1,17 @@
-﻿@{
-    ViewBag.Title = "Index";
+﻿@model CourseLandingPage
+@{
+    ViewBag.Title = "Landing";
 }
 
 <div class="course-promotion">
     <div class="row">
         <div class="col-sm-8">
             <header>
-                @Html.Partial("Promotion/_Header")
+                @Html.Partial("Promotion/_Header", Model)
             </header>
-            @Html.Partial("Promotion/_Lessons")
-            @Html.Partial("Promotion/_Comments")
+            @Html.Partial("Promotion/_Lessons", Model.Lessons)
+            @Html.Partial("Promotion/_Comments",Model.Comments)
         </div>
-        @Html.Partial("Promotion/_Side")
+        @Html.Partial("Promotion/_Side",Model)
     </div>
 </div>

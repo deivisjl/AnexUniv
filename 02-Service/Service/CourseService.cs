@@ -20,6 +20,7 @@ namespace Service
     public interface ICourseService {
         IEnumerable<CourseCard> GetAll(int categoryId = 0);
         ResponseHelper InsertOrUpdateBasicInformation(Course model);
+        CourseLandingPage GetForLandingPage(int id);
         Course Get(int id);
         ResponseHelper AddImage(int id, HttpPostedFileBase file);
     }
@@ -230,6 +231,102 @@ namespace Service
                     }
 
                     result = query.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return result;
+        }
+
+        public CourseLandingPage GetForLandingPage(int id)
+        {
+            var result = new CourseLandingPage();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    var courses = ctx.GetEntity<Course>();
+                    var categories = ctx.GetEntity<Category>();
+                    var lessons = ctx.GetEntity<LessonsPerCourse>();
+                    var reviews = ctx.GetEntity<ReviewPerCourse>();
+                    var students = ctx.GetEntity<UsersPerCourses>();
+                    var users = ctx.GetEntity<ApplicationUser>();
+
+                    var queryStudents = (
+                        from c in courses
+                        from s in students.Where(x => x.CourseId == c.Id)
+                        select new
+                        {
+                            UserId = s.UserId,
+                            CourseId = c.Id
+                        }
+                    ).AsQueryable();
+
+                    var queryReviews = (
+                        from r in reviews
+                        from s in students.Where(x => x.CourseId == r.CourseId)
+                        from u in users.Where(x => x.Id == s.UserId)
+                        select new
+                        {
+                            r.Id,
+                            r.CourseId,
+                            s.UserId,
+                            User = u.LastName + ", " + u.Name,
+                            r.Vote,
+                            r.CreatedAt,
+                            r.Comment
+                        }
+                    ).AsQueryable();
+
+                    var query = (
+                        from c in courses
+                        from u in users.Where(x => x.Id == c.AuthorId)
+                        from ca in categories.Where(x => x.Id == c.CategoryId)
+                        where c.Id == id
+                        select new CourseLandingPage
+                        {
+                            Id = c.Id,
+                            CategoryId = ca.Id,
+                            CategoryName = ca.Name,
+                            CategoryIcon = ca.Icon,
+                            Name = c.Name,
+                            Slug = c.Slug,
+                            Description = c.Description,
+                            Image = c.Image1,
+                            Instructor = (u.LastName + ", " + u.Name),
+                            Price = c.Price,
+                            Vote = c.Vote,
+                            Students = queryStudents.Where(x => x.CourseId == c.Id).Count(),
+                            Status = c.Status,
+                            Lessons = lessons.Where(x => x.CourseId == c.Id).OrderBy(x => x.Order).Select(y =>
+                                new CourseLessonsLandingPage
+                                {
+                                    Id = y.Id,
+                                    Name = y.Name,
+                                    Video = y.Video != null && y.Video.Length > 0
+                                }
+                            ).ToList(),
+                            Comments = queryReviews.Where(x => x.CourseId == c.Id).OrderByDescending(x => x.CreatedAt).Take(10).Select(y =>
+                                new CourseCommentsLandingPage
+                                {
+                                    Id = y.Id,
+                                    User = y.User,
+                                    Comment = y.Comment,
+                                    Date = y.CreatedAt,
+                                    Vote = y.Vote
+                                }
+                            ).ToList(),
+                            TotalComments = queryReviews.Count()
+                        }
+                    ).AsQueryable();
+
+                    var xxxx = queryReviews.Count();
+
+                    result = query.SingleOrDefault();
                 }
             }
             catch (Exception e)

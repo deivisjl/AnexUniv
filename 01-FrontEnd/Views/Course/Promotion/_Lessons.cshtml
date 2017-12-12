@@ -1,24 +1,33 @@
-﻿<div class="panel panel-default">
+﻿@model List<CourseLessonsLandingPage>
+
+<div class="panel panel-default">
     <div class="panel-heading">
-        <h2>Temario <small>10 lecciones</small></h2>
+        <h2>Temario <small>@Model.Count() lecciones</small></h2>
     </div>
     <ul class="list-group">
-        @for (var y = 1; y < 4; y++)
+        @if (Model.Count == 0)
         {
-        <li class="list-group-item">
-            <b>#0@(y)</b> Como construir un nuevo curso sobre metodologías ágiles
+            <li class="list-group-item">
+                Este curso no contiene lecciones disponibles ..
+            </li>
+        }
 
-            <span class="badge">
-                @if (y % 2 == 0)
+        @foreach (var m in Model)
+        {
+            <li class="list-group-item">
+                <b>#@(Model.IndexOf(m) + 1)</b> @m.Name
+
+                <span class="badge">
+                    @if (m.Video)
                 {
-                    <i data-toggle="tooltip" data-placement="top" title="Video" class="fa fa-youtube-play"></i>
-                }
-                else
-                {
-                    <i data-toggle="tooltip" data-placement="top" title="Lectura" class="fa fa-book"></i>
-                }
-            </span>
-        </li>
+                        <i data-toggle="tooltip" data-placement="top" title="Video" class="fa fa-youtube-play"></i>
+                    }
+                    else
+                    {
+                        <i data-toggle="tooltip" data-placement="top" title="Lectura" class="fa fa-book"></i>
+                    }
+                </span>
+            </li>
         }
     </ul>
 </div>

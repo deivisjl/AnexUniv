@@ -12,7 +12,7 @@ namespace FrontEnd.Controllers
         [Route("course/{id}/{slug}")]
         public ActionResult Index(int id, string slug)
         {
-            return View();
+            return View(_courseService.GetForLandingPage(id));
         }
 
         [Route("category/{id}/{slug}")]
