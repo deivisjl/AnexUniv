@@ -24,6 +24,7 @@ namespace Service
         CourseLandingPage GetForLandingPage(int id);
         Course Get(int id);
         ResponseHelper AddImage(int id, HttpPostedFileBase file);
+        ResponseHelper Purchase(int courseId, string userId);
     }
     class CourseService : ICourseService
     {
@@ -422,7 +423,7 @@ namespace Service
                                 EntityType = Enums.EntityType.Courses,
                                 EntityID = course.Id,
                                 IncomeType = Enums.IncomeType.TeacherTotal,
-                                Total = course.Price * (Convert.ToDecimal(Parameters.TeacherComission) / 100)
+                                Total = (Convert.ToDecimal(course.Price)) * (Convert.ToDecimal(Parameters.TeacherComission) / 100)
                             },
 
                             // Ingreso para la empresa
@@ -431,7 +432,7 @@ namespace Service
                                 EntityType = Enums.EntityType.Courses,
                                 EntityID = course.Id,
                                 IncomeType = Enums.IncomeType.CompanyTotal,
-                                Total = Convert.ToDecimal(course.Price) * (Convert.ToDecimal(Parameters.SalesCommission) / 100)
+                                Total = (Convert.ToDecimal(course.Price)) * (Convert.ToDecimal(Parameters.SalesCommission) / 100)
                             }
                         };
 

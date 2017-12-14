@@ -9,7 +9,7 @@ namespace FrontEnd.Controllers
     {
         private IUserService _userService = DependecyFactory.GetInstance<IUserService>();
         [HttpPost]
-        public JsonResult All() {
+        public JsonResult GetCreditsByCurrentUser() {
 
             return Json(_userService.GetCredits(
                     CurrentUserHelper.Get.UserId

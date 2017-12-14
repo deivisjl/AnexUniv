@@ -37,7 +37,14 @@ namespace FrontEnd.Controllers
 
         [HttpPost, Authorize]
         public JsonResult Purchase(int courseId) {
-            return Json(_courseService.Purchase(courseId, CurrentUserHelper.Get.UserId));
+
+            var rh = _courseService.Purchase(courseId, CurrentUserHelper.Get.UserId);
+
+            if (rh.Response) {
+                rh.Href = "studying";
+            }
+
+            return Json(rh);
         }
     }
 }

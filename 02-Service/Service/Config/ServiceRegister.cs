@@ -22,6 +22,7 @@ namespace Service.Config
             container.Register<IRepository<Course>>((x) => new Repository<Course>(ambientDbContextLocator));
             container.Register<IRepository<LessonsPerCourse>>((x) => new Repository<LessonsPerCourse>(ambientDbContextLocator));
             container.Register<IRepository<UsersPerCourses>>((x) => new Repository<UsersPerCourses>(ambientDbContextLocator));
+            container.Register<IRepository<Incomes>>((x) => new Repository<Incomes>(ambientDbContextLocator));
 
             container.Register<IUserService,UserService>();
             container.Register<ICategoryService, CategoryService>();
