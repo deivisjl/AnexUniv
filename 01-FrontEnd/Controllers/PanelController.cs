@@ -10,6 +10,7 @@ namespace FrontEnd.Controllers
     {
         private IUserService _userService = DependecyFactory.GetInstance<IUserService>();
         private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
+        private IWidgetService _widgetService = DependecyFactory.GetInstance<IWidgetService>();
         // GET: Course
         public ActionResult Index()
         {
@@ -78,5 +79,15 @@ namespace FrontEnd.Controllers
                     _userService.GetAll(grid)
                 );
         }
+
+        #region Widget
+        [HttpPost]
+        public JsonResult WidgetGetIncomes(bool month)
+        {
+            return Json(
+                _widgetService.Incomes(month)
+            );
+        }
+        #endregion
     }
 }

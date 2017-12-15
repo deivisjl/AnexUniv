@@ -32,6 +32,7 @@ namespace Service.Config
             container.Register<IInstructorService, InstructorService>();
             container.Register<ILessonService, LessonService>();
             container.Register<IStudentService, StudentService>();
+            container.Register<IWidgetService, WidgetService>();
 
         }
     }

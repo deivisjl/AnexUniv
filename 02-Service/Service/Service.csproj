@@ -103,6 +103,7 @@
     <Compile Include="CategoryService.cs" />
     <Compile Include="StudentService.cs" />
     <Compile Include="UserService.cs" />
+    <Compile Include="WidgetService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\04-Common\Common\Common.csproj">

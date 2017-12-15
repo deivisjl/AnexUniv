@@ -427,6 +427,7 @@
     <Content Include="Assets\vue_components\dist\global.components.js" />
     <Content Include="Assets\vue_components\dist\instructor.components.js" />
     <Content Include="Assets\vue_components\dist\welcome.components.js" />
+    <Content Include="Assets\vue_components\dist\widget.components.js" />
     <Content Include="Assets\vue_components\index.html" />
     <Content Include="Assets\vue_components\src\example.main.js" />
     <Content Include="Assets\vue_components\src\global.main.js" />

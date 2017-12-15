@@ -68,6 +68,7 @@
     <Compile Include="Custom\LessonLandingPage.cs" />
     <Compile Include="Custom\UserForGridView.cs" />
     <Compile Include="Custom\CategoryForGridView.cs" />
+    <Compile Include="Custom\Widget.cs" />
     <Compile Include="Domain\Category.cs" />
     <Compile Include="Domain\Course.cs" />
     <Compile Include="Domain\CourseLessonsLearnedPerStudent.cs" />
