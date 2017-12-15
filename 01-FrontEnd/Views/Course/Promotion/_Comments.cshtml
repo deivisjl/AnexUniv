@@ -18,7 +18,7 @@
                 <h4>
                     <icon name="user"></icon> @m.User
                     <small>
-                        <raiting :value="@m.Vote"></raiting> @m.DateForView
+                        <rating :value="@Convert.ToInt32(m.Vote)"></rating> @m.DateForView
                     </small>
                 </h4>
                 <p class="text-justify">
