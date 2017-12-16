@@ -88,6 +88,22 @@ namespace FrontEnd.Controllers
                 _widgetService.Incomes(month)
             );
         }
+
+        [HttpPost]
+        public JsonResult WidgetGetVariance()
+        {
+            return Json(
+                _widgetService.Variance()
+            );
+        }
+
+        [HttpPost]
+        public JsonResult WidgetGetAverage()
+        {
+            return Json(
+                _widgetService.Average()
+            );
+        }
         #endregion
     }
 }
