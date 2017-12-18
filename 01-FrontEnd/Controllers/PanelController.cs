@@ -11,6 +11,7 @@ namespace FrontEnd.Controllers
         private IUserService _userService = DependecyFactory.GetInstance<IUserService>();
         private ICategoryService _categoryService = DependecyFactory.GetInstance<ICategoryService>();
         private IWidgetService _widgetService = DependecyFactory.GetInstance<IWidgetService>();
+        private ICourseService _courseService = DependecyFactory.GetInstance<ICourseService>();
         // GET: Course
         public ActionResult Index()
         {
@@ -63,10 +64,10 @@ namespace FrontEnd.Controllers
             return Json(rh);
         }
 
-        public ActionResult Courses()
-        {
-            return View();
-        }
+        //public ActionResult Courses()
+        //{
+        //    return View();
+        //}
 
         public ActionResult Users()
         {
@@ -102,6 +103,29 @@ namespace FrontEnd.Controllers
         {
             return Json(
                 _widgetService.Average()
+            );
+        }
+        #endregion
+
+        #region Course
+        public ActionResult Courses()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult GetCourses(AnexGRID grid)
+        {
+            return Json(
+                _courseService.GetAll(grid)
+            );
+        }
+
+        [HttpPost]
+        public JsonResult ChangeStatusByCourse(int id, Enums.Status status)
+        {
+            return Json(
+                _courseService.ChangeStatus(id, status)
             );
         }
         #endregion

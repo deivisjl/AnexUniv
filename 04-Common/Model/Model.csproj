@@ -62,6 +62,7 @@
     <Compile Include="Auth\ApplicationUser.cs" />
     <Compile Include="Auth\ApplicationUserRole.cs" />
     <Compile Include="Custom\CourseCard.cs" />
+    <Compile Include="Custom\CourseForGridView.cs" />
     <Compile Include="Custom\CourseLandingPage.cs" />
     <Compile Include="Custom\CoursePerStudentListView.cs" />
     <Compile Include="Custom\InstructorCourseForGridView.cs" />

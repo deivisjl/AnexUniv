@@ -25,6 +25,8 @@ namespace Service
         Course Get(int id);
         ResponseHelper AddImage(int id, HttpPostedFileBase file);
         ResponseHelper Purchase(int courseId, string userId);
+        AnexGRIDResponde GetAll(AnexGRID grid);
+        ResponseHelper ChangeStatus(int id, Enums.Status status);
     }
     class CourseService : ICourseService
     {
@@ -213,7 +215,7 @@ namespace Service
                         from c in courses
                         from u in users.Where(x => x.Id == c.AuthorId)
                         from ca in categories.Where(x => x.Id == c.CategoryId)
-                        //where c.Status == Enums.Status.Approved
+                        where c.Status == Enums.Status.Approved
                         select new CourseCard
                         {
                             Id = c.Id,
@@ -442,6 +444,94 @@ namespace Service
                     }
 
                     ctx.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+                rh.SetResponse(false, e.Message);
+            }
+
+            return rh;
+        }
+
+        public AnexGRIDResponde GetAll(AnexGRID grid)
+        {
+            grid.Inicializar();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.CreateReadOnly())
+                {
+                    var courses = ctx.GetEntity<Course>();
+                    var categories = ctx.GetEntity<Category>();
+                    var lessons = ctx.GetEntity<LessonsPerCourse>();
+                    var students = ctx.GetEntity<UsersPerCourses>();
+                    var users = ctx.GetEntity<ApplicationUser>();
+
+                    var queryStudents = (
+                        from c in courses
+                        from s in students.Where(x => x.CourseId == c.Id)
+                        select new
+                        {
+                            UserId = s.UserId,
+                            CourseId = c.Id
+                        }
+                    ).AsQueryable();
+
+                    var query = (
+                        from c in courses
+                        from u in users.Where(x => x.Id == c.AuthorId)
+                        select new CourseForGridView
+                        {
+                            Id = c.Id,
+                            Instructor = (u.LastName + ", " + u.Name),
+                            Name = c.Name,
+                            Lessons = lessons.Where(x => x.CourseId == c.Id).Count(),
+                            Students = queryStudents.Where(x => x.CourseId == c.Id).Count(),
+                            Status = c.Status
+                        }
+                    ).AsQueryable();
+
+                    // Order by
+                    if (grid.columna == "Name")
+                    {
+                        query = grid.columna_orden == "DESC" ? query.OrderByDescending(x => x.Name)
+                                                             : query.OrderBy(x => x.Name);
+                    }
+
+                    var data = query.Skip(grid.pagina)
+                                    .Take(grid.limite)
+                                    .ToList();
+
+                    var total = query.Count();
+
+                    grid.SetData(data, total);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
+
+            return grid.responde();
+        }
+
+        public ResponseHelper ChangeStatus(int id, Enums.Status status)
+        {
+            var rh = new ResponseHelper();
+
+            try
+            {
+                using (var ctx = _dbContextScopeFactory.Create())
+                {
+                    var originalEntry = _courseRepo.Single(x => x.Id == id);
+                    originalEntry.Status = status;
+
+                    _courseRepo.Update(originalEntry);
+
+                    ctx.SaveChanges();
+                    rh.SetResponse(true);
                 }
             }
             catch (Exception e)
