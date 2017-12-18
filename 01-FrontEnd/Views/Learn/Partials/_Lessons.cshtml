@@ -1,17 +1,22 @@
-﻿<h3>Temario</h3>
+﻿@model LessonLandingPage
+
+<h3>Temario</h3>
 <ul class="list-group">
-    @for (var y = 1; y < 4; y++)
+    @foreach (var m in Model.Lessons)
     {
-        <li class="list-group-item @(y == 1 ? "active" : "")">
+        <li class="list-group-item @(Model.Id == m.Id ? "active" : "")">
             <div class="row">
                 <div class="col-xs-9 col-sm-10">
-                    <b>#0@(y)</b> <a href="#">Lección #@y</a>
+                    <b>#@(Model.Lessons.IndexOf(m) + 1)</b> <a href="~/learn/@m.CourseId/@m.Id">@m.Name</a>
                 </div>
-                <div class="col-xs-3 col-sm-2 text-right">
-                    <span class="badge">
-                        <i class="fa fa-check"></i>
-                    </span>
-                </div>
+                @if (m.Learned)
+                {
+                    <div class="col-xs-3 col-sm-2 text-right">
+                        <span class="badge">
+                            <i class="fa fa-check"></i>
+                        </span>
+                    </div>
+                }
             </div>
         </li>
     }

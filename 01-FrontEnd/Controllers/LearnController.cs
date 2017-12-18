@@ -11,10 +11,16 @@ namespace FrontEnd.Controllers
     {
         private IStudentService _studentService = DependecyFactory.GetInstance<IStudentService>();
 
-        [Route("learn/{id}/{lessonId}")]
+        [Route("learn/{id}/{lessonId?}")]
         public ActionResult Index(int id, int lessonId = 0)
         {
-            return View();
+            return View(
+                _studentService.Get(
+                    id,
+                    lessonId,
+                    CurrentUserHelper.Get.UserId
+                )
+            );
         }
 
         [HttpPost]
