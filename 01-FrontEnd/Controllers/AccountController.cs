@@ -100,14 +100,19 @@ namespace FrontEnd.Controllers
 
             var roles = await UserManager.GetRolesAsync(currentUser.Id);
 
-            var jUser = JsonConvert.SerializeObject(new CurrentUser {
-                    UserId = currentUser.Id,
-                    Name = currentUser.Email,
-                    UserName = currentUser.Email,
-                    Roles = roles.Select(x => x.Name).ToList()
-            });
+            //var jUser = JsonConvert.SerializeObject(new CurrentUser {
+            //        UserId = currentUser.Id,
+            //        Name = currentUser.Email,
+            //        UserName = currentUser.Email,
+            //        Roles = roles.Select(x => x.Name).ToList()
+            //});
 
-            identity.AddClaim(new Claim(ClaimTypes.UserData, jUser));
+            identity = await ApplicationUser.CreateUserClaims(
+            identity,
+            UserManager,
+            currentUser.Id );
+
+            //identity.AddClaim(new Claim(ClaimTypes.UserData, jUser));
 
             AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = true }, identity);
 
